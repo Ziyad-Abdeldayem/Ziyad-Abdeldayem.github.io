@@ -71,7 +71,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   transform-origin:center;
   box-shadow:inset 0 0 28px rgba(0,0,0,0.8);
   /* CRT: bulging glass + bloom (SVG filter is inline in index.html) */
-  filter:url(#crt) contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
+  -webkit-filter:url("#crt") contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
+  filter:url("#crt") contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
 }
 
 /* phosphor fringing / subtle RGB split */
