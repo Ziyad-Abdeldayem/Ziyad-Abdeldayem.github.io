@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ziyad@portfolio:~$</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#00ff41;--gd:#00aa2b;--am:#ffb000;--rd:#ff3b3b;--cy:#00e5ff;--wh:#c8ffc8;--bg:#0a0c0a}
+html,body{height:100%;background:var(--bg);color:var(--g);font-family:'Courier New',monospace;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:999}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);pointer-events:none;z-index:998}
+
+/* BOOT */
+#boot{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.bl{font-size:13px;color:var(--gd);opacity:0;transition:opacity .3s;letter-spacing:1px}
+#bt{font-size:52px;color:var(--g);text-shadow:0 0 30px var(--g);opacity:0;transition:opacity .5s;letter-spacing:10px;font-weight:bold}
+#bwrap{width:300px;height:3px;background:#1a2a1a;margin-top:14px;overflow:hidden;opacity:0;transition:opacity .3s}
+#bbar{height:100%;width:0%;background:var(--g);box-shadow:0 0 8px var(--g);transition:width .05s linear}
+
+/* GLITCH */
+@keyframes glitch1{0%,100%{clip-path:inset(0 0 98% 0);transform:translate(-4px,0)}50%{clip-path:inset(0 0 90% 0);transform:translate(4px,0)}}
+@keyframes glitch2{0%,100%{clip-path:inset(60% 0 0 0);transform:translate(4px,0)}50%{clip-path:inset(70% 0 0 0);transform:translate(-4px,0)}}
+.glitch-wrap{position:relative;display:inline-block}
+.glitch-wrap::before,.glitch-wrap::after{content:attr(data-text);position:absolute;top:0;left:0;font-size:52px;color:var(--g);letter-spacing:10px;font-weight:bold;opacity:0}
+.glitch-wrap.go::before{animation:glitch1 .15s steps(2) forwards;opacity:1;color:#ff3b3b;text-shadow:none}
+.glitch-wrap.go::after{animation:glitch2 .15s steps(2) forwards;opacity:1;color:#00e5ff;text-shadow:none}
+
+/* TERM */
+#term{width:100%;height:100vh;display:flex;flex-direction:column;opacity:0;transition:opacity .5s}
+#titlebar{display:flex;align-items:center;justify-content:space-between;background:#111811;border-bottom:1px solid var(--gd);padding:6px 16px;flex-shrink:0;z-index:10}
+.dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(255,255,255,.1)}
+#out{flex:1;overflow-y:auto;padding:20px 24px 10px;scrollbar-width:thin;scrollbar-color:var(--gd) var(--bg)}
+#out::-webkit-scrollbar{width:4px}
+#out::-webkit-scrollbar-thumb{background:var(--gd)}
+.ln{line-height:1.65;font-size:14px;white-space:pre;font-family:'Courier New',monospace;animation:fi .12s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.gap{height:8px}
+.header{color:var(--am);letter-spacing:3px;font-weight:bold}
+.info{color:var(--wh)}
+.accent{color:var(--cy)}
+.error{color:var(--rd)}
+.success{color:var(--g)}
+.dim{color:var(--gd)}
+.cmd{color:var(--wh)}
+.art{color:var(--g);font-size:13px}
+.echo{color:var(--gd)}
+
+/* WHOAMI LAYOUT */
+.whoami-block{display:flex;gap:24px;align-items:flex-start;padding:4px 0;animation:fi .12s ease}
+.whoami-photo{flex-shrink:0;border:1px solid var(--gd);padding:3px;box-shadow:0 0 10px var(--gd);position:relative}
+.whoami-photo::before{content:'[img]';position:absolute;top:-18px;left:0;font-size:11px;color:var(--gd);letter-spacing:1px}
+.whoami-photo img{display:block;width:130px;height:130px;object-fit:cover;filter:grayscale(40%) contrast(1.1);opacity:.9}
+.whoami-photo::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.04) 3px,rgba(0,255,65,0.04) 4px);pointer-events:none}
+.whoami-text{display:flex;flex-direction:column;gap:2px;padding-top:4px}
+.whoami-text .wl{font-family:'Courier New',monospace;font-size:14px;line-height:1.65;white-space:pre}
+
+/* INPUT */
+#inrow{display:flex;align-items:center;padding:10px 24px 16px;border-top:1px solid #0f1f0f;flex-shrink:0;gap:6px;background:var(--bg);z-index:10}
+#ps1{color:var(--g);font-size:14px;white-space:nowrap;text-shadow:0 0 8px var(--g)}
+#ci{flex:1;background:transparent;border:none;outline:none;color:var(--wh);font-family:'Courier New',monospace;font-size:14px;caret-color:var(--g)}
+#ci::placeholder{color:#1a3a1a}
+
+/* HINT */
+#hint{position:fixed;bottom:60px;right:24px;color:var(--gd);font-size:12px;opacity:0;transition:opacity 1s;pointer-events:none;z-index:20;letter-spacing:1px}
+
+/* MOBILE KB */
+#mobilekb{display:none;flex-wrap:wrap;gap:4px;padding:8px 12px;background:#0d110d;border-top:1px solid #0f1f0f;z-index:10}
+.kbtn{background:#0f1f0f;border:1px solid var(--gd);color:var(--g);font-family:'Courier New',monospace;font-size:12px;padding:6px 10px;cursor:pointer;border-radius:2px}
+.kbtn:active{background:var(--gd);color:var(--bg)}
+@media(max-width:768px){#mobilekb{display:flex}}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="glitch-wrap" id="bt" data-text="Z1YAD.SH">Z1YAD.SH</div>
+  <div class="bl" id="b1">BIOS v2.4.1 — Initializing memory...</div>
+  <div class="bl" id="b2">Loading kernel modules: [pentest] [chess] [gamedev]</div>
+  <div class="bl" id="b3">Mounting filesystem: /home/ziyad</div>
+  <div class="bl" id="b4">Spawning shell session...</div>
+  <div id="bwrap"><div id="bbar"></div></div>
+</div>
+
+<div id="hint">try 'help' ▮</div>
+
+<div id="term">
+  <div id="titlebar">
+    <div style="display:flex;gap:8px">
+      <div class="dot" style="background:#ff5f57"></div>
+      <div class="dot" style="background:#febc2e"></div>
+      <div class="dot" style="background:#28c840"></div>
+    </div>
+    <div style="font-size:13px;color:var(--gd);letter-spacing:2px">ziyad@portfolio:~$</div>
+    <div style="font-size:11px;color:#2a4a2a;letter-spacing:1px">SSH-2.0-OpenSSH_9.3</div>
+  </div>
+  <div id="out"></div>
+  <div id="inrow">
+    <span id="ps1">ziyad@portfolio:~$&nbsp;</span>
+    <input id="ci" autocomplete="off" spellcheck="false" placeholder="type 'help' to begin..."/>
+  </div>
+  <div id="mobilekb">
+    <button class="kbtn" onclick="quickCmd('help')">help</button>
+    <button class="kbtn" onclick="quickCmd('whoami')">whoami</button>
+    <button class="kbtn" onclick="quickCmd('about')">about</button>
+    <button class="kbtn" onclick="quickCmd('skills')">skills</button>
+    <button class="kbtn" onclick="quickCmd('ls projects')">ls projects</button>
+    <button class="kbtn" onclick="quickCmd('ls writeups')">ls writeups</button>
+    <button class="kbtn" onclick="quickCmd('chess')">chess</button>
+    <button class="kbtn" onclick="quickCmd('contact')">contact</button>
+    <button class="kbtn" onclick="quickCmd('clear')">clear</button>
+  </div>
+</div>
+
+<script>
+function bar(p){var W=18,f=Math.round(W*p/100);return'['+'█'.repeat(f)+'░'.repeat(W-f)+'] '+p+'%'}
+
+var CMDS_LIST=['help','whoami','about','skills','ls projects','ls writeups','chess','contact','clear',
+  'cat resume.pdf','ssh contact','history','man ziyad','cat flag.txt','ping ziyad','ls certs'];
+
+var DATA={
+  help:[
+    {t:'header',v:'[ COMMANDS ]'},{t:'gap'},
+    {t:'cmd',v:'  whoami          ·  who is this person'},
+    {t:'cmd',v:'  about           ·  background & current focus'},
+    {t:'cmd',v:'  skills          ·  technical skill set'},
+    {t:'cmd',v:'  ls projects     ·  project list'},
+    {t:'cmd',v:'  ls writeups     ·  vulnerability research'},
+    {t:'cmd',v:'  ls certs        ·  certifications'},
+    {t:'cmd',v:'  chess           ·  chess stats (yes, really)'},
+    {t:'cmd',v:'  contact         ·  get in touch'},
+    {t:'cmd',v:'  ssh contact     ·  alternative contact view'},
+    {t:'cmd',v:'  man ziyad       ·  the manual page'},
+    {t:'cmd',v:'  history         ·  recent shell history'},
+    {t:'cmd',v:'  cat resume.pdf  ·  download resume'},
+    {t:'cmd',v:'  ping ziyad      ·  check if available'},
+    {t:'cmd',v:'  clear           ·  clear terminal'},
+    {t:'gap'},{t:'dim',v:"  tip: try 'sudo hire ziyad' or 'cat flag.txt' ;)"},{t:'gap'}
+  ],
+  about:[
+    {t:'header',v:'[ ABOUT ]'},{t:'gap'},
+    {t:'info',  v:'  Ziyad Abdeldayem'},
+    {t:'accent',v:'  CS Student @ Helwan University, Cairo, Egypt'},
+    {t:'gap'},
+    {t:'info',v:'  I break web apps for fun (and eventually profit).'},
+    {t:'info',v:'  Also build games, solve ICPC problems, and chase a'},
+    {t:'info',v:'  2000 chess rating like it owes me money.'},
+    {t:'gap'},
+    {t:'dim',v:'  Currently: eJPT V2 prep · Bug bounty · Scholarship hunt'},
+    {t:'gap'}
+  ],
+  skills:[
+    {t:'header',v:'[ SKILLS ]'},{t:'gap'},
+    {t:'accent',v:'  >> OFFENSIVE SECURITY'},
+    {t:'info',v:'  Web App Pentesting    '+bar(85)},
+    {t:'info',v:'  Burp Suite            '+bar(80)},
+    {t:'info',v:'  Nmap / Recon          '+bar(78)},
+    {t:'info',v:'  CTF / Bug Bounty      '+bar(70)},
+    {t:'gap'},
+    {t:'accent',v:'  >> LANGUAGES'},
+    {t:'info',v:'  Python                '+bar(88)},
+    {t:'info',v:'  Java / C / C++        '+bar(75)},
+    {t:'info',v:'  JavaScript            '+bar(72)},
+    {t:'info',v:'  Lua                   '+bar(60)},
+    {t:'gap'},
+    {t:'accent',v:'  >> TOOLS & OTHER'},
+    {t:'info',v:'  Linux                 '+bar(85)},
+    {t:'info',v:'  Selenium / QA         '+bar(75)},
+    {t:'info',v:'  Godot (Game Dev)      '+bar(68)},
+    {t:'info',v:'  Git                   '+bar(80)},
+    {t:'gap'},
+    {t:'dim',v:'  CERTS: eJPT V2 [in progress] · Python Basics [MaharaTech]'},
+    {t:'gap'}
+  ],
+  'ls projects':[
+    {t:'header',v:'[ PROJECTS ]'},{t:'gap'},
+    {t:'accent',v:'  [1] CTF & Bug Bounty Writeups'},
+    {t:'info',  v:'      XSS, SQLi, Auth bypass walkthroughs'},
+    {t:'dim',   v:'      github.com/ziyad-abdeldayem · tags: security, writeups'},
+    {t:'gap'},
+    {t:'accent',v:'  [2] Interstellar Game Jam 6'},
+    {t:'info',  v:'      Solo entry — Godot engine, full game loop in 72h'},
+    {t:'dim',   v:'      tags: gamedev, godot, solo'},
+    {t:'gap'},
+    {t:'accent',v:'  [3] GMTK Game Jam 2023'},
+    {t:'info',  v:'      Co-directed a team of 5. Shipped under 48h.'},
+    {t:'dim',   v:'      tags: gamedev, team, director'},
+    {t:'gap'},
+    {t:'accent',v:'  [4] QA Automation — Digital Egyptian Pioneers'},
+    {t:'info',  v:'      Selenium-based test suite, internship project'},
+    {t:'dim',   v:'      tags: selenium, java, qa, automation'},
+    {t:'gap'},
+    {t:'dim',v:"  run 'ls writeups' to see vulnerability research"},
+    {t:'gap'}
+  ],
+  'ls writeups':[
+    {t:'header', v:'[ WRITEUPS — /vulns ]'},{t:'gap'},
+    {t:'success',v:'  [CONFIRMED]  Reflected XSS via unsanitized search param'},
+    {t:'success',v:'  [CONFIRMED]  SQL Injection — error-based extraction'},
+    {t:'success',v:'  [CONFIRMED]  Auth bypass via JWT none-algorithm'},
+    {t:'gap'},
+    {t:'dim',v:'  Gaps actively being closed:'},
+    {t:'dim',v:'  CORS · XXE · SSTI · SSRF bypass · LFI-to-RCE'},
+    {t:'gap'},
+    {t:'accent',v:'  Stack: PortSwigger Academy + OSWA community guide'},
+    {t:'gap'}
+  ],
+  'ls certs':[
+    {t:'header',v:'[ CERTIFICATIONS ]'},{t:'gap'},
+    {t:'success',v:'  [DONE]        Python Programming Basics — MaharaTech'},
+    {t:'dim',    v:'  [IN PROGRESS] eJPT V2 — eLearnSecurity'},
+    {t:'dim',    v:'  [PLANNED]     OSWA — Offensive Security'},
+    {t:'gap'},
+    {t:'dim',v:'  More incoming. Stay tuned.'},
+    {t:'gap'}
+  ],
+  chess:[
+    {t:'header',v:'[ CHESS.LOG ]'},{t:'gap'},
+    {t:'info',v:'  Current rating  :  ~1511 (Rapid)'},
+    {t:'info',v:'  Target rating   :  2000'},
+    {t:'info',v:'  Status          :  Grinding. No excuses.'},
+    {t:'gap'},
+    {t:'dim',v:'  OTB tournaments + online rapid · Long commute = study time'},
+    {t:'gap'}
+  ],
+  contact:[
+    {t:'header',v:'[ CONTACT ]'},{t:'gap'},
+    {t:'info',  v:'  Open to: bug bounty collab, internships, scholarships'},
+    {t:'gap'},
+    {t:'accent',v:'  GitHub   ->  github.com/ziyad-abdeldayem'},
+    {t:'accent',v:'  LinkedIn ->  linkedin.com/in/ziyad-abdeldayem'},
+    {t:'accent',v:'  Email    ->  [your email here]'},
+    {t:'gap'},
+    {t:'dim',v:'  Cairo, Egypt · UTC+2'},
+    {t:'gap'}
+  ],
+  'ssh contact':[
+    {t:'dim',   v:'  Establishing secure connection...'},
+    {t:'dim',   v:'  ssh ziyad@portfolio -p 22'},
+    {t:'dim',   v:'  Authenticating...'},
+    {t:'success',v:'  Connected. Welcome.'},
+    {t:'gap'},
+    {t:'accent',v:'  ┌─────────────────────────────────────┐'},
+    {t:'accent',v:'  │  SECURE CHANNEL OPEN                │'},
+    {t:'accent',v:'  │                                     │'},
+    {t:'accent',v:'  │  GitHub   github.com/ziyad-abdeldayem │'},
+    {t:'accent',v:'  │  LinkedIn linkedin.com/in/ziyad      │'},
+    {t:'accent',v:'  │  Email    [your email here]          │'},
+    {t:'accent',v:'  │                                     │'},
+    {t:'accent',v:'  └─────────────────────────────────────┘'},
+    {t:'gap'},
+    {t:'dim',v:'  Connection will close after inactivity.'},
+    {t:'gap'}
+  ],
+  history:[
+    {t:'header',v:'[ ~/.bash_history ]'},{t:'gap'},
+    {t:'dim',v:'  1   nmap -sV -sC target.com'},
+    {t:'dim',v:'  2   burpsuite &'},
+    {t:'dim',v:'  3   sqlmap -u "http://target.com/?id=1" --dbs'},
+    {t:'dim',v:'  4   git commit -m "fix: finally fixed that bug"'},
+    {t:'dim',v:'  5   vim writeup.md'},
+    {t:'dim',v:'  6   python3 exploit.py'},
+    {t:'dim',v:'  7   cd /home/ziyad/ctf'},
+    {t:'dim',v:'  8   cat /etc/passwd'},
+    {t:'dim',v:'  9   sudo apt install gobuster'},
+    {t:'dim',v:'  10  chess.com &'},
+    {t:'dim',v:'  11  grep -r "password" .'},
+    {t:'dim',v:'  12  curl -X POST http://target.com/login -d "admin=1"'},
+    {t:'dim',v:"  13  echo 'another day, another vuln'"},
+    {t:'gap'}
+  ],
+  'man ziyad':[
+    {t:'header',v:'ZIYAD(1)              User Commands             ZIYAD(1)'},{t:'gap'},
+    {t:'info',  v:'NAME'},
+    {t:'info',  v:'       ziyad - security researcher, developer, chess player'},
+    {t:'gap'},
+    {t:'info',  v:'SYNOPSIS'},
+    {t:'info',  v:'       ziyad [--pentest] [--build] [--chess] [--learn]'},
+    {t:'gap'},
+    {t:'info',  v:'DESCRIPTION'},
+    {t:'info',  v:'       CS student at Helwan University specializing in web'},
+    {t:'info',  v:'       application security. Builds things with code, breaks'},
+    {t:'info',  v:'       things with Burp Suite, and sacrifices sleep for CTFs.'},
+    {t:'gap'},
+    {t:'info',  v:'OPTIONS'},
+    {t:'accent',v:'       --pentest    web app hacking, bug bounty, writeups'},
+    {t:'accent',v:'       --build      godot games, QA automation, web dev'},
+    {t:'accent',v:'       --chess      rated ~1511, target 2000, no chill'},
+    {t:'accent',v:'       --learn      eJPT V2, OSWA, PortSwigger, always'},
+    {t:'gap'},
+    {t:'info',  v:'BUGS'},
+    {t:'dim',   v:'       Occasionally gets too deep in rabbit holes.'},
+    {t:'dim',   v:'       Known to open 40 browser tabs during research.'},
+    {t:'gap'},
+    {t:'info',  v:'SEE ALSO'},
+    {t:'dim',   v:'       contact(1), ls-projects(1), skills(1)'},
+    {t:'gap'},
+    {t:'dim',   v:'Helwan University          2025              ZIYAD(1)'},
+    {t:'gap'}
+  ],
+  'cat flag.txt':[
+    {t:'dim',   v:'  reading flag.txt...'},
+    {t:'gap'},
+    {t:'success',v:'  FLAG{y0u_f0und_1t_n0w_h1r3_m3}'},
+    {t:'gap'},
+    {t:'dim',   v:'  nice. you know how this works.'},
+    {t:'gap'}
+  ],
+  'sudo hire ziyad':[
+    {t:'success',v:'  [sudo] password for recruiter: **********'},
+    {t:'gap'},
+    {t:'success',v:'  Executing: hire --candidate=ziyad --decision=yes'},
+    {t:'success',v:'  Reference check:    PASSED'},
+    {t:'success',v:'  Curiosity index:    9.8 / 10'},
+    {t:'success',v:'  Ships things:       CONFIRMED'},
+    {t:'gap'},
+    {t:'accent',v:'  Job offer sent. Check /contact for email.'},
+    {t:'gap'}
+  ]
+};
+
+var EASTER={
+  'ls':              [{t:'dim',  v:"  .: try 'ls projects', 'ls writeups', or 'ls certs'"}],
+  'pwd':             [{t:'info', v:'  /home/ziyad'}],
+  'uname -a':        [{t:'dim',  v:'  Linux ziyad-machine 6.1.0-kali #1 SMP x86_64 GNU/Linux'}],
+  'cat /etc/passwd': [{t:'dim',  v:'  nice try.'}],
+  'rm -rf /':        [{t:'error',v:'  access denied. (nice try though)'}],
+  'exit':            [{t:'dim',  v:'  Not so fast. Press F12 and stare into the void.'}],
+  'nmap':            [{t:'dim',  v:'  Starting Nmap 7.94 ... scanning portfolio ... open ports: 80, 443, your-heart'}],
+  'sqlmap':          [{t:'dim',  v:"  sqlmap: no injectable params found. try 'ls writeups' instead."}],
+  'date':            [{t:'info', v:'  '+new Date().toString()}],
+  'vim':             [{t:'dim',  v:'  hint: to exit vim, type :q! and pray'}],
+  ':q!':             [{t:'success',v:'  vim closed. you did it.'}],
+  'cd ..':           [{t:'dim',  v:'  ziyad@portfolio:/$ nope, nothing up there.'}],
+  'sudo':            [{t:'dim',  v:"  usage: sudo hire ziyad"}],
+  'git log':         [{t:'dim',  v:'  commit d34db33f - "add more easter eggs"\n  commit c0ffee42 - "fix everything"\n  commit b4dc0de1 - "initial commit"'}],
+  'ifconfig':        [{t:'info', v:'  eth0: inet 127.0.0.1  cairo-net  UP RUNNING'}],
+  'whoops':          [{t:'dim',  v:"  happens to the best of us."}],
+};
+
+var WELCOME=[
+  {t:'art',v:'                                                    '},
+  {t:'art',v:'_|_|_|_|_|  _|_|_|  _|      _|    _|_|    _|_|_|  '},
+  {t:'art',v:'      _|      _|      _|  _|    _|    _|  _|    _| '},
+  {t:'art',v:'    _|        _|        _|      _|_|_|_|  _|    _| '},
+  {t:'art',v:'  _|          _|        _|      _|    _|  _|    _| '},
+  {t:'art',v:'_|_|_|_|_|  _|_|_|      _|      _|    _|  _|_|_|  '},
+  {t:'gap'},
+  {t:'dim',    v:'  Last login: '+new Date().toUTCString()},
+  {t:'dim',    v:'  Shell: /bin/bash  ·  Terminal: xterm-256color'},
+  {t:'gap'},
+  {t:'success',v:"  Session started. Type 'help' to explore."},
+  {t:'gap'}
+];
+
+var out=document.getElementById('out');
+var ci=document.getElementById('ci');
+var hist=[],hi=-1;
+var hintTimer=null;
+var hint=document.getElementById('hint');
+var hasTyped=false;
+
+// ── PING ──────────────────────────────────────────────────────────────────────
+function doPing(){
+  var lines=[{t:'dim',v:'  PING ziyad@portfolio (127.0.0.1)'},{t:'gap'}];
+  printLines(lines,0);
+  var i=0,seq=['32ms','29ms','31ms','28ms'];
+  var iv=setInterval(function(){
+    addLine({t:'success',v:'  64 bytes from ziyad: icmp_seq='+i+' ttl=64 time='+seq[i]},0);
+    i++;
+    if(i>=4){
+      clearInterval(iv);
+      setTimeout(function(){
+        printLines([
+          {t:'gap'},
+          {t:'info',v:'  --- ziyad ping statistics ---'},
+          {t:'success',v:'  4 packets transmitted, 4 received, 0% packet loss'},
+          {t:'dim',v:'  ziyad is available for hire.'},
+          {t:'gap'}
+        ],0);
+      },200);
+    }
+  },400);
+}
+
+// ── RESUME DOWNLOAD ───────────────────────────────────────────────────────────
+function doResume(){
+  printLines([
+    {t:'dim',   v:'  Locating resume.pdf...'},
+    {t:'success',v:'  Found: /home/ziyad/resume.pdf'},
+    {t:'dim',   v:'  Initiating download...'},
+    {t:'gap'},
+    {t:'accent', v:'  [ Replace this with a real link in the source ]'},
+    {t:'dim',   v:'  hint: set resumeURL variable at top of script'},
+    {t:'gap'}
+  ],20);
+  // To wire up a real download, set resumeURL to your actual PDF link
+  var resumeURL = ''; // <- put your CV link here
+  if(resumeURL){
+    var a=document.createElement('a');
+    a.href=resumeURL;a.download='ziyad-resume.pdf';a.click();
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function addLine(l,delay){
+  return new Promise(function(res){
+    setTimeout(function(){
+      if(l.t==='gap'){var d=document.createElement('div');d.style.height='8px';out.appendChild(d);}
+      else{var d=document.createElement('div');d.className='ln '+l.t;d.textContent=l.v||'';out.appendChild(d);}
+      out.scrollTop=out.scrollHeight;res();
+    },delay||0);
+  });
+}
+
+function printLines(lines,delay){
+  lines.forEach(function(l,i){addLine(l,i*(delay||0));});
+}
+
+// Typewriter welcome
+function typeWelcome(lines){
+  var i=0;
+  function next(){
+    if(i>=lines.length)return;
+    var l=lines[i++];
+    if(l.t==='art'||l.t==='dim'||l.t==='success'){
+      // type these out char by char
+      var d=document.createElement('div');
+      d.className='ln '+(l.t||'info');
+      out.appendChild(d);
+      out.scrollTop=out.scrollHeight;
+      var chars=l.v.split(''),ci2=0;
+      var iv=setInterval(function(){
+        d.textContent+=chars[ci2++];
+        out.scrollTop=out.scrollHeight;
+        if(ci2>=chars.length){clearInterval(iv);setTimeout(next,40);}
+      },l.t==='art'?8:18);
+    } else {
+      addLine(l,0).then(function(){setTimeout(next,30);});
+    }
+  }
+  next();
+}
+
+// ── SET YOUR PHOTO PATH HERE ──────────────────────────────────────────────────
+var PHOTO_SRC = 'photo.jpg'; // put your photo file in the same folder as index.html
+
+function renderWhoami(){
+  // ASCII art name lines
+  var artLines=[
+    '                                                    ',
+    '_|_|_|_|_|  _|_|_|  _|      _|    _|_|    _|_|_|  ',
+    '      _|      _|      _|  _|    _|    _|  _|    _| ',
+    '    _|        _|        _|      _|_|_|_|  _|    _| ',
+    '  _|          _|        _|      _|    _|  _|    _| ',
+    '_|_|_|_|_|  _|_|_|      _|      _|    _|  _|_|_|  '
+  ];
+  artLines.forEach(function(v){
+    var d=document.createElement('div');
+    d.className='ln art';d.textContent=v;
+    out.appendChild(d);
+  });
+
+  // Side by side block
+  var block=document.createElement('div');
+  block.className='whoami-block';
+
+  // Photo side
+  var photoWrap=document.createElement('div');
+  photoWrap.className='whoami-photo';
+  var img=document.createElement('img');
+  img.src=PHOTO_SRC;
+  img.alt='ziyad';
+  img.onerror=function(){
+    // fallback ASCII face if no photo found
+    photoWrap.innerHTML='<div style="width:130px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gd);font-size:11px;line-height:1.4;text-align:center">'+
+    ' .--------.<br> |  O    O |<br> |    __  |<br> |  \\____/ |<br> `--------\'<br><br>[no photo.jpg]</div>';
+  };
+  photoWrap.appendChild(img);
+  block.appendChild(photoWrap);
+
+  // Text side
+  var textWrap=document.createElement('div');
+  textWrap.className='whoami-text';
+  var textLines=[
+    {c:'var(--wh)', v:'  Ziyad Abdeldayem'},
+    {c:'var(--cy)', v:'  CS Student @ Helwan University'},
+    {c:'var(--cy)', v:'  Cairo, Egypt'},
+    {c:'var(--gd)', v:''},
+    {c:'var(--g)',  v:'  uid=1337(ziyad)'},
+    {c:'var(--gd)', v:'  gid=sec'},
+    {c:'var(--gd)', v:'  groups=pentest,chess,gamedev'},
+    {c:'var(--gd)', v:''},
+    {c:'var(--wh)', v:'  eJPT V2 [in progress]'},
+    {c:'var(--wh)', v:'  Bug bounty hunter'},
+    {c:'var(--wh)', v:'  Chess ~1511 → 2000'},
+  ];
+  textLines.forEach(function(l){
+    var d=document.createElement('div');
+    d.className='wl';
+    d.style.color=l.c;
+    d.textContent=l.v;
+    textWrap.appendChild(d);
+  });
+  block.appendChild(textWrap);
+  out.appendChild(block);
+
+  // gap after
+  var g=document.createElement('div');g.style.height='8px';out.appendChild(g);
+  out.scrollTop=out.scrollHeight;
+}
+
+function handleCmd(raw){
+  var cmd=raw.trim().toLowerCase();
+  if(!cmd)return;
+  resetHintTimer();
+  var d=document.createElement('div');
+  d.className='ln echo';
+  d.textContent='ziyad@portfolio:~$ '+raw.trim();
+  out.appendChild(d);
+  out.scrollTop=out.scrollHeight;
+
+  if(cmd==='clear'){setTimeout(function(){out.innerHTML='';},50);return;}
+  if(cmd==='ping ziyad'||cmd==='ping'){doPing();return;}
+  if(cmd==='cat resume.pdf'){doResume();return;}
+  if(cmd==='whoami'){renderWhoami();return;}
+
+  var res=DATA[cmd]||EASTER[cmd];
+  if(res){printLines(res,20);}
+  else{
+    printLines([
+      {t:'error',v:'  bash: '+cmd+': command not found'},
+      {t:'dim',  v:"  type 'help' for available commands"},
+      {t:'gap'}
+    ],0);
+  }
+}
+
+// ── TAB AUTOCOMPLETE ──────────────────────────────────────────────────────────
+ci.addEventListener('keydown',function(e){
+  if(e.key==='Tab'){
+    e.preventDefault();
+    var val=ci.value.toLowerCase();
+    if(!val)return;
+    var match=CMDS_LIST.filter(function(c){return c.startsWith(val);});
+    if(match.length===1){ci.value=match[0];}
+    else if(match.length>1){
+      printLines([{t:'dim',v:'  '+match.join('  ')},{t:'gap'}],0);
+    }
+    return;
+  }
+  if(e.key==='Enter'){
+    var v=ci.value;ci.value='';hi=-1;
+    if(v.trim())hist.unshift(v.trim());
+    if(!hasTyped){hasTyped=true;clearTimeout(hintTimer);hint.style.opacity=0;}
+    handleCmd(v);
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    if(hi<hist.length-1)hi++;
+    ci.value=hist[hi]||'';
+  } else if(e.key==='ArrowDown'){
+    e.preventDefault();
+    if(hi>0)hi--;else{hi=-1;ci.value='';return;}
+    ci.value=hist[hi]||'';
+  }
+});
+
+document.addEventListener('click',function(){ci.focus();});
+
+function quickCmd(cmd){ci.value=cmd;ci.focus();}
+
+// ── HINT TIMER ────────────────────────────────────────────────────────────────
+function resetHintTimer(){
+  clearTimeout(hintTimer);
+  hint.style.opacity=0;
+  if(!hasTyped){
+    hintTimer=setTimeout(function(){hint.style.opacity=1;},5000);
+  }
+}
+
+// ── GLITCH ────────────────────────────────────────────────────────────────────
+function glitch(){
+  var el=document.getElementById('bt');
+  if(!el)return;
+  el.classList.add('go');
+  setTimeout(function(){el.classList.remove('go');},200);
+  setTimeout(glitch,Math.random()*8000+4000);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+function boot(){
+  var bt=document.getElementById('bt');
+  var b1=document.getElementById('b1');
+  var b2=document.getElementById('b2');
+  var b3=document.getElementById('b3');
+  var b4=document.getElementById('b4');
+  var bwrap=document.getElementById('bwrap');
+  var bbar=document.getElementById('bbar');
+  var bootEl=document.getElementById('boot');
+  var term=document.getElementById('term');
+
+  function show(el,d){setTimeout(function(){el.style.opacity=1;},d);}
+  show(bt,200);
+  setTimeout(glitch,3000);
+  show(b1,800);show(b2,1150);show(b3,1500);show(b4,1850);
+  setTimeout(function(){bwrap.style.opacity=1;},2000);
+
+  var w=0;
+  setTimeout(function(){
+    var iv=setInterval(function(){
+      w+=Math.random()*6+2;
+      if(w>=100){w=100;clearInterval(iv);
+        setTimeout(function(){
+          bootEl.style.transition='opacity 0.4s';
+          bootEl.style.opacity=0;
+          setTimeout(function(){
+            bootEl.style.display='none';
+            term.style.opacity=1;
+            ci.focus();
+            typeWelcome(WELCOME);
+            resetHintTimer();
+          },400);
+        },300);
+      }
+      bbar.style.width=w+'%';
+    },40);
+  },2100);
+}
+
+boot();
+</script>
+</body>
+</html>
