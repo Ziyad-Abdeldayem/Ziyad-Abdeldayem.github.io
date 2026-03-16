@@ -1,5 +1,14 @@
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--g:#00ff41;--gd:#00aa2b;--am:#ffb000;--rd:#ff3b3b;--cy:#00e5ff;--wh:#c8ffc8;--bg:#0a0c0a}
+/* Green CRT preset (cool-retro-term-ish) */
+:root{
+  --g:#7CFF6B;   /* phosphor green */
+  --gd:#2FBF3A;  /* dim green */
+  --am:#ffb000;
+  --rd:#ff3b3b;
+  --cy:#66ffe6;  /* softer cyan */
+  --wh:#d8ffd8;  /* greenish white */
+  --bg:#040704;  /* deeper black-green */
+}
 html,body{height:100%;background:var(--bg);color:var(--g);font-family:'Courier New',monospace;overflow:hidden}
 
 /* global scanlines + vignette */
@@ -61,16 +70,16 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   transform:translateZ(65px) scale(1.03);
   transform-origin:center;
   box-shadow:inset 0 0 28px rgba(0,0,0,0.8);
-  /* cool-retro-term-ish look: glass bulge + phosphor bloom */
-  filter:url(#crt-warp) url(#crt-bloom);
+  /* CRT: bulging glass + bloom (SVG filter is inline in index.html) */
+  filter:url(#crt) contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
 }
 
 /* phosphor fringing / subtle RGB split */
 #term{
   text-shadow:
-    0.35px 0 rgba(0,255,65,0.22),
-    -0.35px 0 rgba(0,229,255,0.12),
-    0 0 10px rgba(0,255,65,0.10);
+    0.45px 0 rgba(124,255,107,0.24),
+    -0.45px 0 rgba(102,255,230,0.12),
+    0 0 14px rgba(124,255,107,0.12);
 }
 
 #titlebar{display:flex;align-items:center;justify-content:space-between;background:#111811;border-bottom:1px solid var(--gd);padding:6px 16px;flex-shrink:0;z-index:10}
@@ -197,4 +206,3 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   #standard{padding:14px 16px 12px}
   .std-head{gap:12px}
 }
-
