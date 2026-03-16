@@ -134,6 +134,15 @@ async function main() {
 
   let viewMode = "terminal"; // 'terminal' | 'standard'
 
+  function setInputEnabledMode(enabled) {
+    // While in standard mode, keep input disabled even if the terminal queue finishes.
+    if (viewMode === "standard") {
+      ci.disabled = true;
+      return;
+    }
+    setInputEnabled(ci, enabled);
+  }
+
   function extractFirstMatchingUrls(lines) {
     const urls = [];
     for (const l of lines || []) {
@@ -154,6 +163,24 @@ async function main() {
     return d;
   }
 
+  function stripDuplicateHeader(lines, title) {
+    const arr = Array.isArray(lines) ? [...lines] : [];
+    if (!arr.length) return arr;
+
+    // If the block itself starts with a header like "[ CONTACT ]", drop it (and one immediate gap).
+    const first = arr[0];
+    const firstText = String(first?.v || "").trim();
+    const titleNorm = String(title || "").trim();
+    const looksLikeHeader = first?.t === "header" || (/^\[[^\]]+\]$/.test(firstText) && firstText.length <= 40);
+    const matchesTitle = titleNorm && (firstText === titleNorm);
+
+    if (looksLikeHeader && (matchesTitle || first?.t === "header")) {
+      arr.shift();
+      if (arr[0]?.t === "gap") arr.shift();
+    }
+    return arr;
+  }
+
   function addStdSection(title, lines) {
     const s = document.createElement("section");
     s.className = "std-section";
@@ -162,7 +189,8 @@ async function main() {
     h.textContent = title;
     const b = document.createElement("div");
     b.className = "std-block";
-    for (const l of lines || []) {
+    const cleaned = stripDuplicateHeader(lines, title);
+    for (const l of cleaned) {
       if (l.t === "gap") {
         const gap = document.createElement("div");
         gap.style.height = "8px";
@@ -254,10 +282,12 @@ async function main() {
     viewToggle.textContent = isStd ? "view: terminal" : "view: standard";
 
     if (isStd) {
-      setInputEnabled(ci, false);
+      // Switch instantly, even if terminal is mid-print.
+      isPrinting = false;
+      setInputEnabledMode(false);
       buildStandardView();
     } else {
-      setInputEnabled(ci, true);
+      setInputEnabledMode(true);
     }
   }
 
@@ -464,9 +494,9 @@ async function main() {
       else if (match.length > 1) {
         enqueue(async () => {
           isPrinting = true;
-          setInputEnabled(ci, false);
+          setInputEnabledMode(false);
           await printLines([{ t: "dim", v: "  " + match.join("  ") }, { t: "gap" }], { perLineDelayMs: 0 });
-          setInputEnabled(ci, true);
+          setInputEnabledMode(true);
           isPrinting = false;
         });
       }
@@ -486,9 +516,9 @@ async function main() {
 
       enqueue(async () => {
         isPrinting = true;
-        setInputEnabled(ci, false);
+        setInputEnabledMode(false);
         await handleCmd(v);
-        setInputEnabled(ci, true);
+        setInputEnabledMode(true);
         isPrinting = false;
       });
     } else if (e.key === "ArrowUp") {
@@ -565,13 +595,13 @@ async function main() {
             window.setTimeout(() => {
               bootEl.style.display = "none";
               term.style.opacity = 1;
-              setInputEnabled(ci, true);
+              setInputEnabledMode(true);
               enqueue(async () => {
                 isPrinting = true;
-                setInputEnabled(ci, false);
+                setInputEnabledMode(false);
                 await typeWelcome(profile.welcome || []);
                 resetHintTimer();
-                setInputEnabled(ci, true);
+                setInputEnabledMode(true);
                 isPrinting = false;
               });
             }, 400);
@@ -583,8 +613,7 @@ async function main() {
   }
 
   viewToggle.addEventListener("click", () => {
-    // Switch immediately, but don’t interrupt an in-flight print queue.
-    if (isPrinting) return;
+    // Switch immediately (even mid-animation).
     setViewMode(viewMode === "terminal" ? "standard" : "terminal");
   });
 
@@ -592,5 +621,6 @@ async function main() {
 }
 
 main().catch(() => {});
+
 
 
