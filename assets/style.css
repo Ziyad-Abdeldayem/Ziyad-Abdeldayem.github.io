@@ -62,17 +62,19 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   height:100%;
   display:flex;
   flex-direction:column;
+  position:relative;
   opacity:0;
   transition:opacity .5s;
   border-radius:0;
   overflow:hidden;
   background:linear-gradient(180deg,#070a07,#060806);
-  transform:translateZ(65px) scale(1.03);
+  /* "bulging glass" illusion: center forward + slight barrel-ish perspective */
+  transform:translateZ(85px) scale(1.035);
   transform-origin:center;
   box-shadow:inset 0 0 28px rgba(0,0,0,0.8);
-  /* CRT: bulging glass + bloom (SVG filter is inline in index.html) */
-  -webkit-filter:url("#crt") contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
-  filter:url("#crt") contrast(1.05) saturate(1.15) drop-shadow(0 0 14px rgba(124,255,107,0.12));
+  /* CRT: bloom + phosphor */
+  -webkit-filter:url("#crt-bloom") contrast(1.06) saturate(1.2) drop-shadow(0 0 16px rgba(124,255,107,0.14));
+  filter:url("#crt-bloom") contrast(1.06) saturate(1.2) drop-shadow(0 0 16px rgba(124,255,107,0.14));
 }
 
 /* phosphor fringing / subtle RGB split */
@@ -81,6 +83,22 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     0.45px 0 rgba(124,255,107,0.24),
     -0.45px 0 rgba(102,255,230,0.12),
     0 0 14px rgba(124,255,107,0.12);
+}
+
+/* extra "glass" curvature: edge darkening + center lift (no frame) */
+#term::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:5;
+  background:
+    radial-gradient(ellipse at center, rgba(124,255,107,0.04) 0%, transparent 52%),
+    radial-gradient(circle at 0% 50%, rgba(0,0,0,0.55) 0%, transparent 55%),
+    radial-gradient(circle at 100% 50%, rgba(0,0,0,0.55) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%);
+  mix-blend-mode:screen;
+  opacity:.9;
 }
 
 #titlebar{display:flex;align-items:center;justify-content:space-between;background:#111811;border-bottom:1px solid var(--gd);padding:6px 16px;flex-shrink:0;z-index:10}
