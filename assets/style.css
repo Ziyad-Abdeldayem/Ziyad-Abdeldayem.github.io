@@ -7,7 +7,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);pointer-events:none;z-index:998}
 
 /* CRT shell + curvature */
-#crt{position:fixed;inset:0;padding:18px;display:flex}
+#crt{
+  position:fixed;
+  inset:0;
+  padding:18px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  perspective:1400px; /* gives the screen a 3D bulge */
+}
 #crt::before{
   content:'';
   position:absolute;
@@ -17,8 +25,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   z-index:20;
   box-shadow:
     0 0 0 1px rgba(0,255,65,0.10),
-    0 0 0 10px rgba(0,0,0,0.35) inset,
-    0 18px 60px rgba(0,0,0,0.65);
+    0 0 0 10px rgba(0,0,0,0.45) inset,
+    0 22px 70px rgba(0,0,0,0.75);
 }
 #crt::after{
   content:'';
@@ -28,10 +36,12 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   pointer-events:none;
   z-index:21;
   background:
-    radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 28%, transparent 55%),
-    radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,0.55) 100%);
+    radial-gradient(ellipse at center, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.035) 30%, transparent 58%),
+    radial-gradient(circle at 15% 50%, rgba(0,0,0,0.7) 40%, transparent 70%),
+    radial-gradient(circle at 85% 50%, rgba(0,0,0,0.7) 40%, transparent 70%),
+    radial-gradient(ellipse at 50% 40%, transparent 50%, rgba(0,0,0,0.7) 100%);
   mix-blend-mode:screen;
-  opacity:.55;
+  opacity:.7;
 }
 
 /* BOOT */
@@ -60,8 +70,11 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   border-radius:26px / 20px;
   overflow:hidden;
   background:linear-gradient(180deg,#070a07,#060806);
-  transform:perspective(1200px) rotateX(0.7deg);
+  transform:translateZ(65px) scale(1.02);
   transform-origin:center;
+  box-shadow:
+    inset 0 0 28px rgba(0,0,0,0.8),
+    0 0 40px rgba(0,0,0,0.85);
 }
 
 #titlebar{display:flex;align-items:center;justify-content:space-between;background:#111811;border-bottom:1px solid var(--gd);padding:6px 16px;flex-shrink:0;z-index:10}
@@ -190,4 +203,3 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   #standard{padding:14px 16px 12px}
   .std-head{gap:12px}
 }
-
