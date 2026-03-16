@@ -278,12 +278,11 @@
       { "t": "wl", "color": "var(--cy)", "v": "  Cairo, Egypt" },
       { "t": "wl", "color": "var(--gd)", "v": "" },
       { "t": "wl", "color": "var(--g)", "v": "  uid=1337(ziyad)" },
-      { "t": "wl", "color": "var(--gd)", "v": "  gid=sec" },
+      { "t": "wl", "color": "var(--gd)", "v": "  gid=cybersec" },
       { "t": "wl", "color": "var(--gd)", "v": "  groups=pentest,chess,gamedev" },
       { "t": "wl", "color": "var(--gd)", "v": "" },
       { "t": "wl", "color": "var(--wh)", "v": "  eJPT V2 [in progress]" },
-      { "t": "wl", "color": "var(--wh)", "v": "  Bug bounty hunter" },
-      { "t": "wl", "color": "var(--wh)", "v": "  Chess ~1511 → 2000" }
+      { "t": "wl", "color": "var(--wh)", "v": "  Bug bounty hunter" }
     ]
   }
 }
