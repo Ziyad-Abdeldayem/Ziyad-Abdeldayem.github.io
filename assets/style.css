@@ -6,7 +6,7 @@ html,body{height:100%;background:var(--bg);color:var(--g);font-family:'Courier N
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:999}
 body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);pointer-events:none;z-index:998}
 
-/* CRT shell + curvature */
+/* CRT shell + curvature (glass bulge only, no hard frame) */
 #crt{
   position:fixed;
   inset:0;
@@ -14,25 +14,13 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   display:flex;
   justify-content:center;
   align-items:center;
-  perspective:1400px; /* gives the screen a 3D bulge */
-}
-#crt::before{
-  content:'';
-  position:absolute;
-  inset:12px;
-  border-radius:26px / 20px;
-  pointer-events:none;
-  z-index:20;
-  box-shadow:
-    0 0 0 1px rgba(0,255,65,0.10),
-    0 0 0 10px rgba(0,0,0,0.45) inset,
-    0 22px 70px rgba(0,0,0,0.75);
+  perspective:1400px;
 }
 #crt::after{
   content:'';
   position:absolute;
-  inset:12px;
-  border-radius:26px / 20px;
+  inset:0;
+  border-radius:0;
   pointer-events:none;
   z-index:21;
   background:
@@ -67,14 +55,12 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   flex-direction:column;
   opacity:0;
   transition:opacity .5s;
-  border-radius:26px / 20px;
+  border-radius:0;
   overflow:hidden;
   background:linear-gradient(180deg,#070a07,#060806);
   transform:translateZ(65px) scale(1.02);
   transform-origin:center;
-  box-shadow:
-    inset 0 0 28px rgba(0,0,0,0.8),
-    0 0 40px rgba(0,0,0,0.85);
+  box-shadow:inset 0 0 28px rgba(0,0,0,0.8);
 }
 
 #titlebar{display:flex;align-items:center;justify-content:space-between;background:#111811;border-bottom:1px solid var(--gd);padding:6px 16px;flex-shrink:0;z-index:10}
@@ -122,9 +108,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .whoami-photo{
   width:140px;
   height:140px;
-  border:1px solid var(--gd);
-  padding:3px;
-  box-shadow:0 0 10px rgba(0,170,43,.35);
+  padding:3px 3px 3px 3px;
+  box-shadow:0 0 12px rgba(0,170,43,.25);
   position:relative;
   overflow:hidden;
   background:#071007;
@@ -154,9 +139,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .std-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}
 .std-photo{
   width:96px;height:96px;flex:0 0 auto;
-  border:1px solid var(--gd);
   padding:3px;
-  box-shadow:0 0 10px rgba(0,170,43,.25);
+  box-shadow:0 0 10px rgba(0,170,43,.18);
   background:#071007;
   position:relative;
   overflow:hidden;
@@ -172,7 +156,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 
 .std-section{margin:14px 0}
 .std-section .h{color:var(--am);letter-spacing:3px;font-weight:bold;margin-bottom:6px}
-.std-block{border:1px solid rgba(0,170,43,.18);background:rgba(6,10,6,.55);padding:10px 12px;border-radius:2px}
+.std-block{padding:2px 0 0 0}
 .std-line{white-space:pre;line-height:1.65;font-size:14px}
 .std-line.dim{color:var(--gd)}
 .std-line.info{color:var(--wh)}
@@ -203,4 +187,3 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   #standard{padding:14px 16px 12px}
   .std-head{gap:12px}
 }
-
