@@ -28,9 +28,13 @@
       <div class="dot" style="background:#28c840"></div>
     </div>
     <div style="font-size:13px;color:var(--gd);letter-spacing:2px">ziyad@portfolio:~$</div>
-    <div style="font-size:11px;color:#2a4a2a;letter-spacing:1px">SSH-2.0-OpenSSH_9.3</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="viewToggle" class="viewbtn" type="button">view: standard</button>
+      <div style="font-size:11px;color:#2a4a2a;letter-spacing:1px">SSH-2.0-OpenSSH_9.3</div>
+    </div>
   </div>
   <div id="out"></div>
+  <div id="standard" aria-hidden="true"></div>
   <div id="inrow">
     <span id="ps1">ziyad@portfolio:~$&nbsp;</span>
     <input id="ci" autocomplete="off" spellcheck="false" placeholder="type 'help' to begin..."/>
