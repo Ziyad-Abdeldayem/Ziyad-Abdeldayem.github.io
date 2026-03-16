@@ -22,11 +22,9 @@
 <!-- CRT filters (warp + bloom). Keep inline so CSS can use url(#crt). -->
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
   <defs>
-    <filter id="crt" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.0025" numOctaves="1" seed="2" result="noise"/>
-      <feGaussianBlur in="noise" stdDeviation="22" result="noiseBlur"/>
-      <feDisplacementMap in="SourceGraphic" in2="noiseBlur" scale="150" xChannelSelector="R" yChannelSelector="G" result="warped"/>
-      <feGaussianBlur in="warped" stdDeviation="1.1" result="blur"/>
+    <!-- Bloom only (no noise warp; noise displacement looks "wavy") -->
+    <filter id="crt-bloom" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="blur"/>
       <feColorMatrix in="blur" type="matrix" values="
         1 0 0 0 0
         0 1 0 0 0
@@ -34,7 +32,7 @@
         0 0 0 1.25 0" result="bloom"/>
       <feMerge>
         <feMergeNode in="bloom"/>
-        <feMergeNode in="warped"/>
+        <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
